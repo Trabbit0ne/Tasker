@@ -11,6 +11,7 @@ A terminal-based task manager application with a calendar interface, built using
   - Enter: View and manage tasks for a selected day.
   - `a`: Add a task.
   - `d`: Delete a task.
+  - `L`: List all task
   - `b`: Go back to the calendar.
   - `q`: Quit the application.
 
