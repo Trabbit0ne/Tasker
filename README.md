@@ -1,6 +1,4 @@
 # Tasker
-## Task Manager with Calendar Interface
-
 A terminal-based task manager application with a calendar interface, built using Python's `curses` module. This app allows users to view a monthly calendar, navigate through dates, and manage tasks for specific days.
 
 ## Features
