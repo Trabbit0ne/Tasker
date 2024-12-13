@@ -29,6 +29,10 @@ Run the application using:
 ```bash
 python3 tasker.py
 ```
+Alias
+```bash
+echo 'alias agenda="python3 ~/Tasker/tasker.py"' >> ~/.bash_profile
+```
 
 ### Controls
 - **Arrow Keys**: Navigate through the calendar.
