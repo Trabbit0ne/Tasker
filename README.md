@@ -20,8 +20,8 @@ A terminal-based task manager application with a calendar interface, built using
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Trabbit0ne/tasker.git
-   cd tasker
+   git clone https://github.com/Trabbit0ne/Tasker.git
+   cd Tasker
    ```
 
 2. Install dependencies:
@@ -29,16 +29,11 @@ A terminal-based task manager application with a calendar interface, built using
    pip install -r requirements.txt
    ```
 
-> **Note:** The `curses` module is part of Python's standard library and does not require installation. However, it is not available on Windows by default. Windows users may need to install a compatible library like `windows-curses`:
-   ```bash
-   pip install windows-curses
-   ```
-
 ## Usage
 
 Run the application using:
 ```bash
-python task_calendar.py
+python3 tasker.py
 ```
 
 ### Controls
@@ -53,10 +48,5 @@ python task_calendar.py
 
 - `tasker.py`: Main application script.
 - `tasks.json`: JSON file to store tasks (created automatically on first run).
-- `requirements.txt`: List of dependencies.
-
-## Contributing
-
-Contributions are welcome! Feel free to fork the repository and submit a pull request.
 
 **Author**: Trabbit0ne
