@@ -1,16 +1,22 @@
+import os
 import curses
 import calendar
 import json
 from datetime import datetime
 
 # Constants
-TASK_FILE = "tasks.json"
+TASK_FILE = os.path.expanduser("~/.agenda/tasks.json")  # Save in a specific directory
 HEADER_COLOR = 1
 DAY_COLOR = 2
 SELECTED_DAY_COLOR = 3
 ACTION_COLOR = 4
 
 # Utility Functions
+def ensure_task_file_directory():
+    """Ensure the tasks directory exists."""
+    directory = os.path.dirname(TASK_FILE)
+    os.makedirs(directory, exist_ok=True)
+
 def load_tasks():
     """Load tasks from the JSON file."""
     try:
@@ -21,8 +27,9 @@ def load_tasks():
 
 def save_tasks(tasks):
     """Save tasks to the JSON file."""
+    ensure_task_file_directory()  # Ensure the directory exists
     with open(TASK_FILE, "w") as file:
-        json.dump(tasks, file)
+        json.dump(tasks, file, indent=4)
 
 def setup_colors():
     """Initialize color pairs for the interface."""
