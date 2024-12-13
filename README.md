@@ -33,6 +33,10 @@ Alias
 ```bash
 echo 'alias agenda="python3 ~/Tasker/tasker.py"' >> ~/.bash_profile
 ```
+Then
+```bash
+source ~/.bash_profile
+```
 
 ### Controls
 - **Arrow Keys**: Navigate through the calendar.
