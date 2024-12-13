@@ -16,15 +16,10 @@ A terminal-based task manager application with a calendar interface, built using
 
 ## Installation
 
-1. Clone the repository:
+Clone the repository:
    ```bash
    git clone https://github.com/Trabbit0ne/Tasker.git
    cd Tasker
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
    ```
 
 ## Usage
