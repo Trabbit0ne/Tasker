@@ -1,4 +1,4 @@
-# Tgenda
+# Tasker
 ## Task Manager with Calendar Interface
 
 A terminal-based task manager application with a calendar interface, built using Python's `curses` module. This app allows users to view a monthly calendar, navigate through dates, and manage tasks for specific days.
@@ -20,8 +20,8 @@ A terminal-based task manager application with a calendar interface, built using
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Trabbit0ne/Tgnda.git
-   cd Tgnda
+   git clone https://github.com/Trabbit0ne/tasker.git
+   cd tasker
    ```
 
 2. Install dependencies:
@@ -51,7 +51,7 @@ python task_calendar.py
 
 ## File Structure
 
-- `tgnda.py`: Main application script.
+- `tasker.py`: Main application script.
 - `tasks.json`: JSON file to store tasks (created automatically on first run).
 - `requirements.txt`: List of dependencies.
 
