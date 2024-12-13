@@ -1,22 +1,17 @@
-import os
 import curses
 import calendar
 import json
 from datetime import datetime
 
 # Constants
-TASK_FILE = os.path.expanduser("~/.agenda/tasks.json")  # Save in a specific directory
+TASK_FILE = "tasks.json"
 HEADER_COLOR = 1
 DAY_COLOR = 2
 SELECTED_DAY_COLOR = 3
 ACTION_COLOR = 4
+SELECTED_MONTH_COLOR = 5
 
 # Utility Functions
-def ensure_task_file_directory():
-    """Ensure the tasks directory exists."""
-    directory = os.path.dirname(TASK_FILE)
-    os.makedirs(directory, exist_ok=True)
-
 def load_tasks():
     """Load tasks from the JSON file."""
     try:
@@ -27,9 +22,8 @@ def load_tasks():
 
 def save_tasks(tasks):
     """Save tasks to the JSON file."""
-    ensure_task_file_directory()  # Ensure the directory exists
     with open(TASK_FILE, "w") as file:
-        json.dump(tasks, file, indent=4)
+        json.dump(tasks, file)
 
 def setup_colors():
     """Initialize color pairs for the interface."""
@@ -38,6 +32,7 @@ def setup_colors():
     curses.init_pair(DAY_COLOR, curses.COLOR_BLACK, curses.COLOR_WHITE)  # Days
     curses.init_pair(SELECTED_DAY_COLOR, curses.COLOR_BLACK, curses.COLOR_GREEN)  # Selected Day
     curses.init_pair(ACTION_COLOR, curses.COLOR_WHITE, curses.COLOR_RED)  # Actions
+    curses.init_pair(SELECTED_MONTH_COLOR, curses.COLOR_WHITE, curses.COLOR_CYAN)  # Selected Month
 
 def draw_calendar(stdscr, month, year, selected_day):
     """Render the calendar view."""
@@ -119,6 +114,33 @@ def task_window(stdscr, year, month, day, tasks):
                 curses.noecho()
         stdscr.refresh()
 
+def draw_month_selection(stdscr, selected_month):
+    """Render the month selection interface."""
+    stdscr.clear()
+    setup_colors()
+
+    # Display header
+    header_text = "*** Select Month ***"
+    stdscr.addstr(0, 0, header_text, curses.color_pair(HEADER_COLOR) | curses.A_BOLD)
+
+    # Display months in a grid (3x4 layout)
+    months = list(calendar.month_name[1:])
+    rows, cols = 3, 4  # Display months in a 3x4 grid
+    for i in range(rows):
+        for j in range(cols):
+            month_idx = i * cols + j
+            if month_idx < len(months):
+                month_name = months[month_idx]
+                color = curses.color_pair(DAY_COLOR)
+                if month_idx == selected_month:
+                    color = curses.color_pair(SELECTED_MONTH_COLOR)
+                stdscr.addstr(i + 2, j * 20 + 2, f"{month_name}", color | curses.A_BOLD)
+
+    # Display instructions
+    instructions = "Use arrow keys to select a month, Enter to confirm, 'q' to quit."
+    stdscr.addstr(8, 0, instructions, curses.A_DIM)
+    stdscr.refresh()
+
 def main(stdscr):
     """Main application loop."""
     curses.curs_set(0)
@@ -126,28 +148,53 @@ def main(stdscr):
 
     # Initialize state
     now = datetime.now()
-    current_year, current_month, selected_day = now.year, now.month, now.day
+    current_year = now.year
+    selected_month = 0  # Start with January
     tasks = load_tasks()
 
     while True:
-        draw_calendar(stdscr, current_month, current_year, selected_day)
+        draw_month_selection(stdscr, selected_month)
 
         key = stdscr.getch()
         if key == ord('q'):
             break
-        elif key == curses.KEY_RIGHT:
-            if selected_day < calendar.monthrange(current_year, current_month)[1]:
-                selected_day += 1
-        elif key == curses.KEY_LEFT:
-            if selected_day > 1:
-                selected_day -= 1
-        elif key == curses.KEY_UP:
-            selected_day = max(1, selected_day - 7)
         elif key == curses.KEY_DOWN:
-            max_day = calendar.monthrange(current_year, current_month)[1]
-            selected_day = min(max_day, selected_day + 7)
+            if selected_month < 8:  # Stay within the 3x4 grid (9 months max in the grid)
+                selected_month += 4
+        elif key == curses.KEY_UP:
+            if selected_month >= 4:
+                selected_month -= 4
+        elif key == curses.KEY_RIGHT:
+            if selected_month % 4 < 3:  # Avoid moving out of bounds in the grid
+                selected_month += 1
+        elif key == curses.KEY_LEFT:
+            if selected_month % 4 > 0:
+                selected_month -= 1
         elif key in (curses.KEY_ENTER, 10, 13):
-            task_window(stdscr, current_year, current_month, selected_day, tasks)
+            # Confirm the selected month
+            current_month = selected_month + 1  # Set current month to selected month
+            selected_day = 1  # Start on the first day of the month
+
+            # Loop for calendar and task management
+            while True:
+                draw_calendar(stdscr, current_month, current_year, selected_day)
+
+                key = stdscr.getch()
+                if key == ord('q'):
+                    break
+                elif key == curses.KEY_RIGHT:
+                    if selected_day < calendar.monthrange(current_year, current_month)[1]:
+                        selected_day += 1
+                elif key == curses.KEY_LEFT:
+                    if selected_day > 1:
+                        selected_day -= 1
+                elif key == curses.KEY_UP:
+                    selected_day = max(1, selected_day - 7)
+                elif key == curses.KEY_DOWN:
+                    max_day = calendar.monthrange(current_year, current_month)[1]
+                    selected_day = min(max_day, selected_day + 7)
+                elif key in (curses.KEY_ENTER, 10, 13):
+                    task_window(stdscr, current_year, current_month, selected_day, tasks)
 
 if __name__ == "__main__":
     curses.wrapper(main)
