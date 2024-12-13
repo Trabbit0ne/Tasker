@@ -1,4 +1,0 @@
-curses
-calendar
-json
-datetime
