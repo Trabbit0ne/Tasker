@@ -62,7 +62,7 @@ def draw_calendar(stdscr, month, year, selected_day):
                 stdscr.addstr(3 + row_idx, col_idx * 4 + 2, "  ")
 
     # Display instructions
-    instructions = "Use arrow keys to navigate, Enter to select a day, 'q' to quit."
+    instructions = "Use arrow keys to navigate, Enter to select a day, 'q' to quit, 'L' to list tasks."
     stdscr.addstr(10, 0, instructions, curses.A_DIM)
     stdscr.refresh()
 
@@ -113,6 +113,39 @@ def task_window(stdscr, year, month, day, tasks):
                     pass
                 curses.noecho()
         stdscr.refresh()
+
+def list_month_tasks(stdscr, year, month, tasks):
+    """List all tasks for the selected month."""
+    stdscr.clear()
+    setup_colors()
+
+    # Display header
+    month_name = calendar.month_name[month]
+    header_text = f"Tasks for {month_name} {year}:"
+    stdscr.addstr(0, 0, header_text, curses.color_pair(HEADER_COLOR) | curses.A_BOLD)
+
+    # List tasks for the whole month
+    cal = calendar.monthcalendar(year, month)
+    tasks_found = False
+    for row_idx, week in enumerate(cal):
+        for col_idx, day in enumerate(week):
+            if day != 0:
+                task_list = tasks.get(f"{year}-{month:02}-{day:02}", [])
+                if task_list:
+                    tasks_found = True
+                    stdscr.addstr(2 + row_idx + col_idx, 0, f"{day:02}:")
+                    for task in task_list:
+                        stdscr.addstr(f"  - {task}\n")
+    
+    if not tasks_found:
+        stdscr.addstr(2, 0, "No tasks for this month.")
+
+    # Display options
+    stdscr.addstr(4 + len(cal) * 2, 0, "Press any key to go back.", curses.color_pair(ACTION_COLOR))
+    stdscr.refresh()
+
+    # Wait for key press to go back
+    stdscr.getch()
 
 def draw_month_selection(stdscr, selected_month):
     """Render the month selection interface."""
@@ -182,6 +215,8 @@ def main(stdscr):
                 key = stdscr.getch()
                 if key == ord('q'):
                     break
+                elif key == ord('L'):
+                    list_month_tasks(stdscr, current_year, current_month, tasks)
                 elif key == curses.KEY_RIGHT:
                     if selected_day < calendar.monthrange(current_year, current_month)[1]:
                         selected_day += 1
