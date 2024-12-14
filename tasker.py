@@ -115,7 +115,7 @@ def task_window(stdscr, year, month, day, tasks):
         stdscr.refresh()
 
 def list_month_tasks(stdscr, year, month, tasks):
-    """List all tasks for the selected month."""
+    """List all tasks for the selected month in a single-line format per day."""
     stdscr.clear()
     setup_colors()
 
@@ -124,24 +124,26 @@ def list_month_tasks(stdscr, year, month, tasks):
     header_text = f"Tasks for {month_name} {year}:"
     stdscr.addstr(0, 0, header_text, curses.color_pair(HEADER_COLOR) | curses.A_BOLD)
 
-    # List tasks for the whole month
-    cal = calendar.monthcalendar(year, month)
+    # Initialize row index for task display
+    row_idx = 2
     tasks_found = False
-    for row_idx, week in enumerate(cal):
-        for col_idx, day in enumerate(week):
-            if day != 0:
-                task_list = tasks.get(f"{year}-{month:02}-{day:02}", [])
-                if task_list:
-                    tasks_found = True
-                    stdscr.addstr(2 + row_idx + col_idx, 0, f"{day:02}:")
-                    for task in task_list:
-                        stdscr.addstr(f"  - {task}\n")
-    
+
+    # Iterate through all days in the month
+    for day in range(1, calendar.monthrange(year, month)[1] + 1):
+        date_key = f"{year}-{month:02}-{day:02}"
+        task_list = tasks.get(date_key, [])
+        if task_list:
+            tasks_found = True
+            # Combine tasks into a single line with the day
+            tasks_text = " - " + " - ".join(task_list)
+            stdscr.addstr(row_idx, 0, f"{day:02}{tasks_text}", curses.color_pair(DAY_COLOR))
+            row_idx += 1
+
     if not tasks_found:
-        stdscr.addstr(2, 0, "No tasks for this month.")
+        stdscr.addstr(row_idx, 0, "No tasks for this month.", curses.color_pair(DAY_COLOR))
 
     # Display options
-    stdscr.addstr(4 + len(cal) * 2, 0, "Press any key to go back.", curses.color_pair(ACTION_COLOR))
+    stdscr.addstr(row_idx + 2, 0, "Press any key to go back.", curses.color_pair(ACTION_COLOR))
     stdscr.refresh()
 
     # Wait for key press to go back
