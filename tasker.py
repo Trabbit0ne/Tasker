@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 # Constants
-TASK_FILE = ".tasks.json"
+TASK_FILE = "~/.agenda/tasks.json"
 HEADER_COLOR = 1
 DAY_COLOR = 2
 SELECTED_DAY_COLOR = 3
